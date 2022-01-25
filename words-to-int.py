@@ -35,7 +35,7 @@ dict = {
 	"sixteen": 16,
 	"fifteen": 15,
 	"fourteen": 14,
-	"thriteen": 13,
+	"thirteen": 13,
 	"twelve": 12,
 	"eleven": 11,
 	"ten": 10,

@@ -1,24 +1,4 @@
-def multisplit(string, delimiters):
-	"""	Uses the split function over multiple delimiters
-
-		Parameters:
-		string (string): The string to apply the dleimiters to
-		delimiters (list): list of the delimiters to apply to the string
-
-		Returns:
-		newlist (list): A list of strings analagous to the output of the split function
-
-	"""
-	oldlist = [string]
-	for i in range(len(delimiters)):
-		newlist = []
-		breaker = delimiters[i]
-		for j in range(len(oldlist)):
-			newlist.extend(oldlist[j].split(breaker))
-		oldlist = newlist
-	return newlist
-
-dict = {
+w2idict = {
 	"vigintillion": 1000000000000000000000000000000000000000000000000000000000000000,
 	"novemdecillion": 1000000000000000000000000000000000000000000000000000000000000,
 	"octodecillion": 1000000000000000000000000000000000000000000000000000000000,
@@ -67,10 +47,37 @@ dict = {
 	"four": 4,
 	"three": 3,
 	"two": 2,
-	"one": 1
+	"one": 1,
+	"zero": 0
 }
+#Allows written word to integer conversion
 
-tcid = {value : key for (key, value) in dict.items()}
+i2wdict = {value : key for (key, value) in w2idict.items()}
+#Inverts the keys and values of w2idict, allows integer to written word conversion
+
+i2wlist = ["", "thousand", "million", "billion", "trillion", "quadrillion", "quintillion", "sextillion", "septillion", "octillion", "nonillion", "decillion", "undecillion", "duodecillion", "tredecillion", "quattuordecillion", "quindecillion" ,"sexdecillion" ,"septendecillion", "octodecillion", "novemdecillion", "vigintillion"]
+
+def multisplit(string, delimiters):
+	"""	Uses the split function over multiple delimiters
+
+		Parameters:
+		string (string): The string to apply the dleimiters to
+		delimiters (list): list of the delimiters to apply to the string
+
+		Returns:
+		newlist (list): A list of strings analagous to the output of the split function
+
+	"""
+	oldlist = [string]
+	for i in range(len(delimiters)):
+		newlist = []
+		breaker = delimiters[i]
+		for j in range(len(oldlist)):
+			newlist.extend(oldlist[j].split(breaker))
+		oldlist = newlist
+
+	return newlist
+
 
 def word2int(words):
 	"""	Takes an integer number written out in English and returns the number it represents
@@ -103,16 +110,44 @@ def word2int(words):
 			if (list[i] == "hundred"):
 				tempnum *= 100
 			elif (list[i] == "thousand" or list[i][-3:] == "ion"):
-				tempnum *= dict[list[i]]
+				tempnum *= w2idict[list[i]]
 				fullnum += tempnum
 				tempnum = 0
 			else:
-				tempnum += dict[list[i]]
+				tempnum += w2idict[list[i]]
 	fullnum += tempnum
 	fullnum *= sign
 
 	return fullnum
 
+def int2wordsub (string):
+	""" Parses a the string of a three digit number and writes it out in English
+
+		Parameters:
+		string (string): String of the number
+
+		Returns:
+		words (string): The English representation of the three digit number
+
+	"""
+	words = ""
+	if (string == "000"):
+		return words
+	if string[0] != "0":
+		words += i2wdict[int(string[0])] + " hundred"
+		if (string[1] != "0" or string[2] != "0"):
+			words += " and "
+		else:
+			return words
+	if (string[1] == "0"):
+		words += i2wdict[int(string[2])]
+	elif (string[1] == "1"):
+		words += i2wdict[int(string[1:])]
+	else:
+		words += i2wdict[int(string[1]+"0")]
+		if (string[2] != "0"):
+			words += " "+i2wdict[int(string[2])]
+	return words
 
 def int2word (number):
 	"""	Takes an integer number and writes it out in English
@@ -127,22 +162,20 @@ def int2word (number):
 	number = str(number)
 	i = len(number)
 	list = []
-	while (i>0):
-		if (i<3):
-			temp = number
-			print(number,temp,list)
-			list.insert(0,temp)
-			print(number,temp,list)
+	while (i > 0):
+		if (i < 3):
+#			print(number, list, i)
+			number = "0" + number
+			i += 1
+		elif (i == 3):
+#			print(number, list, i)
+			list.append(number)
+			i -= 3
 		else:
-			temp = number[-3:]
-			print(number,temp,list)
+#			print(number, list, i)
+			list.append(number[-3:])
 			number = number[:-3]
-			print(number,temp,list)
-			list.insert(0,temp)
-			print(number,temp,list)
-		i -= 3
-
-	words = ""
+			i -= 3
+#	print(number, list, i)
+	words = list
 	return words
-
-int2word(5545566)

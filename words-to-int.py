@@ -20,7 +20,6 @@ w2idict = {
 	"billion": 1000000000,
 	"million": 1000000,
 	"thousand": 1000,
-	"hundred": 100,
 	"ninety": 90,
 	"eighty": 80,
 	"seventy": 70,
@@ -55,7 +54,7 @@ w2idict = {
 i2wdict = {value : key for (key, value) in w2idict.items()}
 #Inverts the keys and values of w2idict, allows integer to written word conversion
 
-i2wlist = ["", "thousand", "million", "billion", "trillion", "quadrillion", "quintillion", "sextillion", "septillion", "octillion", "nonillion", "decillion", "undecillion", "duodecillion", "tredecillion", "quattuordecillion", "quindecillion" ,"sexdecillion" ,"septendecillion", "octodecillion", "novemdecillion", "vigintillion"]
+i2wlist = ["", " thousand", " million", " billion", " trillion", " quadrillion", " quintillion", " sextillion", " septillion", " octillion", " nonillion", " decillion", " undecillion", " duodecillion", " tredecillion", " quattuordecillion", " quindecillion" ," sexdecillion" ," septendecillion", " octodecillion", " novemdecillion", " vigintillion"]
 
 def multisplit(string, delimiters):
 	"""	Uses the split function over multiple delimiters
@@ -120,62 +119,89 @@ def word2int(words):
 
 	return fullnum
 
-def int2wordsub (string):
-	""" Parses a the string of a three digit number and writes it out in English
+
+def string3 (string, hyph=False):
+	""" Parses the string of a three digit number and writes it out in English
 
 		Parameters:
 		string (string): String of the number
+		hyph (Boolean): Optional, allows for hyphenation formatting in the output if true, defaults to false
 
 		Returns:
-		words (string): The English representation of the three digit number
+		words (string): The English representation of the number
 
 	"""
-	words = ""
-	if (string == "000"):
-		return words
-	if string[0] != "0":
-		words += i2wdict[int(string[0])] + " hundred"
-		if (string[1] != "0" or string[2] != "0"):
-			words += " and "
-		else:
-			return words
-	if (string[1] == "0"):
-		words += i2wdict[int(string[2])]
-	elif (string[1] == "1"):
-		words += i2wdict[int(string[1:])]
+	if (hyph):
+		gap = "-"
 	else:
-		words += i2wdict[int(string[1]+"0")]
+		gap = " "
+	words = ""
+	if (string[0] != "0"):
+		words += i2wdict[int(string[0])] + gap + "hundred"
+	if (string[1] != "0" or string[2] != "0"):
+		if (string[0] != "0"):
+			words += " and "
+		if (string[1] == "1"):
+			words += i2wdict[int(string[1:])]
+			return words
+		elif (string[1] != "0"):
+			words += i2wdict[int(string[1] + "0")]
+			if (string[2] != "0"):
+				words += gap
 		if (string[2] != "0"):
-			words += " "+i2wdict[int(string[2])]
+			words += i2wdict[int(string[2])]
+	if (words == ""):
+		words += "zero"
 	return words
 
-def int2word (number):
+
+def int2word (number, hyph = False, comm = False):
 	"""	Takes an integer number and writes it out in English
 
 		Parameters:
 		number (int): The number to be written out
+		hyph (Boolean): Optional, allows for hyphenation formatting in the output if true, defaults to false
+		comm (Boolean): Optional, allows for comma spaced formatting in the output if true, defaults to false
 
 		Returns:
 		words (string): The written out format of the input
 
 	"""
+	if (comm):
+		gap = ", "
+	else:
+		gap = " "
+	sign = 1
+	if (number < 0):
+		sign = -1
+		number = -number
 	number = str(number)
 	i = len(number)
 	list = []
+	words = ""
 	while (i > 0):
 		if (i < 3):
-#			print(number, list, i)
 			number = "0" + number
 			i += 1
 		elif (i == 3):
-#			print(number, list, i)
 			list.append(number)
 			i -= 3
 		else:
-#			print(number, list, i)
 			list.append(number[-3:])
 			number = number[:-3]
 			i -= 3
-#	print(number, list, i)
-	words = list
+	for j in range(len(list)):
+		if (list[j] == "000"):
+			continue
+		digits = string3(list[j],hyph) + i2wlist[j]
+		if (words != "" and j != len(list)):
+			if (j == 1 and not ("hundred" in words)):
+				words = " and " + words
+			else:
+				words = gap + words
+		words = digits + words
+	if (words == ""):
+		words = "zero"
+	if (sign == -1):
+		words = "minus " + words
 	return words
